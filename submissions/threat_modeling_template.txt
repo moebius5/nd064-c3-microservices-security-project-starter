@@ -1,0 +1,20 @@
+Docker Threat Modeling
+Given Docker's system components and the STRIDE framework, identify five potential threats that may arise.
+T - Tampering: Improper ownership of docker.socket file may lead to altering the behavior of the Docker remote API.
+R - Repudiation: Once the client is compromised, or the specific user gains the place in the group 'docker' - that may lead to not legitimate image building and running permissions.
+I - Information Disclosure: unrestricted traffic when enabled between all containers on the same host and on the same default network bridge can lead to potential of reading all packets across the container network on the same host.
+D - Denial of Service: The default ulimit set at the Docker daemon level should be honored. If it's being overriden it could follow the situation of exceeding you ulimit settings which leads to overuse system resources and will cause system degradation and unresponsiveness.
+E - Elevation of Privilege: --privileged flag if specified to run a container will give all capabilities to the container to which it is applied.
+
+
+Kubernetes Threat Modeling
+Given Kubernetes' system components and the STRIDE framework, identify five potential threats that may arise.
+S - Spoofing: Connection between apiserver and kubelet is a subject to man-in-the-middle attack
+T - Tampering: Unauthorized r/w-access to etcd data directory may lead to broken data integrity, or configuration data replace
+I - Information Disclosure: Misconfiguration in applying and serving an insecure API service having been bound to insecure IP address can lead to outage and potential leakage of sensitive data in transit. Turned on profiling generates a significant amount of program data that could potentially be exploited to uncover system and program details.	
+D - Denial of Service: A misbehaving workload could overwhelm and DoS the API Server, making it unavailable in cases there is no limit on the number of events that the API server will accept in a given time slice.
+E - Elevation of Privilege: Inappropriate access to secrets stored within the Kubernetes cluster can allow for an attacker to gain additional access to the Kubernetes cluter or external resources whose credentials are stored as secrets.
+
+
+Docker-bench Run Results and Analysis
+From the failed findings, select and document 3 findings from the Docker-bench results that you want to harden based on the 5 attack surface areas you identified in Step 1. At least 1 of the 3 hardened findings should be different from the ones mentioned in the exercise (i.e. 5.10, 5.14, and 5.22).
