@@ -1,10 +1,11 @@
 Docker Threat Modeling
 Given Docker's system components and the STRIDE framework, identify five potential threats that may arise.
+S - of network traffic: Docker supports the addition and removal of capabilities. You should remove all capabilities not required for the correct function of the container. Specifically, in the default capability set provided by Docker, the new_raw capability should be removed if not explicitly required, as it can give an attacker with access to a container the ability to create spoofed network traffic.
 T - Tampering: Improper ownership of docker.socket file may lead to altering the behavior of the Docker remote API.
 R - Repudiation: Once the client is compromised, or the specific user gains the place in the group 'docker' - that may lead to not legitimate image building and running permissions.
 I - Information Disclosure: unrestricted traffic when enabled between all containers on the same host and on the same default network bridge can lead to potential of reading all packets across the container network on the same host.
-D - Denial of Service: The default ulimit set at the Docker daemon level should be honored. If it's being overriden it could follow the situation of exceeding you ulimit settings which leads to overuse system resources and will cause system degradation and unresponsiveness.
-E - Elevation of Privilege: --privileged flag if specified to run a container will give all capabilities to the container to which it is applied.
+D - Denial of Service: By default, a container can use all of the memory on the host. You can use memory limit mechanisms to prevent a denial of service from occurring, where one container consumes all of the host’s resources and other containers on the same host are therefore not able to function. Denial of Service protection could result in exhausting resources needed to provide the service and lead to an outage.
+E - Elevation of Privilege: Acquiring new privileges. A process can set the no_new_priv bit in the kernel and this persists across forks, clones and execve. 
 
 
 Kubernetes Threat Modeling
@@ -18,3 +19,14 @@ E - Elevation of Privilege: Inappropriate access to secrets stored within the Ku
 
 Docker-bench Run Results and Analysis
 From the failed findings, select and document 3 findings from the Docker-bench results that you want to harden based on the 5 attack surface areas you identified in Step 1. At least 1 of the 3 hardened findings should be different from the ones mentioned in the exercise (i.e. 5.10, 5.14, and 5.22).
+
+Docker FAIL findings and remediations:
+1. [FAIL] 2.1 Ensure network traffic is restricted between containers on the default bridge (Scored) (Information Disclosure from my Threat Modeling) >> added "icc": false in /etc/docker/daemon.json
+2. [FAIL] 2.17.a Ensure containers are restricted from acquiring new privileges (Scored) (Elevation of Privilege from my Threat Modeling) >> I will add -no-new-privileges parameter in /etc/docker/daemon.json
+   [FAIL] 2.17.b Ensure containers are restricted from acquiring new privileges (Scored) (Elevation of Privilege from my Threat Modeling) >> that wouldn't bee needed if the above operation would be performed
+3. [FAIL] 5.10 Ensure that the memory usage for container is limited (Scored) (Denial of Service) >> both build container opensuse/hardened-v1.0:latest with memory limited to 512mb and started the existing container opensuse/leap as "docker run --interactive --tty --memory 512m opensuse/leap /bin/bash" (screenshots: 'suse_docker_environment_build_hardened_opensuse-leap.png' and 'suse_docker_environment_limited_existing_opensuse-leap.png') and the memory limitations took place on both containers. But the docker-bench would show it as FAIL, but the actual settings were performed and the output of the command to audit that settings from CIS doc is actually shows the correct settings (2 containers with Memory=536870912), I think it's a bug and we can omit this because we implemented desired settings and the audit command shows us there is no container with Memory=0 parameter.
+
+
+
+
+
