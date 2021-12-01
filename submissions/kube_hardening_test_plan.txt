@@ -1,0 +1,9 @@
+- How will you test the changes?
+
+Indeed all the hardening process I will first implement on the separate development or staging environment. I will watch the overall status of the cluster, cluster components, examine their logs. Better if you have the technical means (additional server boxes or amazon aws instances) to have the ability to deploy hardened cluster from the scratch (to have the ability to catch some issues during the actual deployment process, not only examining already deployed applications), and after that deploy the desired deployment/pods of end software. It will take some time for examining the behavior of cluster components and software deployments. After the initial software tests were successful, I can stage that environment leveraging a small amount of production traffic and continuously monitoring the logs and components for errors and performance issues. And after that we can be assured to implement the hardening on production environment.
+
+
+
+- How will you ensure the changes don't negatively affect your cluster?
+
+First things first - before hardening we should read and examine the potential negative influence from the CIS benchmark and related articles. For instance, I decided to omit the hardening of the 5.2.2-5.2.5 rules, I found from the article (https://rancher.com/docs/rancher/v2.5/en/cis-scans/skipped-tests/) that remediation of those rules could cause applications to unexpectedly fail. And how will I ensure - various software tests, logs, performance metrics, tracing for latency. 
