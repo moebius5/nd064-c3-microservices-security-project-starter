@@ -1,0 +1,22 @@
+1. Incident commander name: Muhammet Berdimyradov, IT Ops Team.
+
+2. Executive Summary of what happened:
+Three pods running three different crypto miners were discovered on staging kubernetes cluster 'kube-ecommerce3'. 
+Overall staging cluster downgrade in service - 15 minutes. No enterprise data loss was detected.
+
+3. Summary of what was affected:
+Monero crypto-mining containers, specifically minergate, moneropool, and xmrpooldotnet were used by malicious attack.
+Staging Kubernetes cluster 'kube-ecommerce3', worker nodes #1-12 were used as a compute resource platform for the malicious software.
+The Remote management Backdoor has been detected on the 'adminVM3-jaysmith' VDI client VM at 'itops' VM cluster, opened ssh session with malicious script invoking local kubectl command found. Opened browser session was also detected, malicious browser plugin was installed, which lead to deployment of backdoor software.
+
+4. Summary of the impact:
+The attacker managed to run crypto miners on our 13-node cluster, consuming the most CPU power of the whole cluster (192 CPU cores).
+"Ecommerce-Shop"-pods were temporarily unavailable or responded with significant timeouts, overall malicious execution duration - 15 minutes.
+
+5. Summary of the remediation steps:
+The administrator defined malicious mining pods by the Grafana Falco dashboard events panel alerts and high CPU resource consumption in Compute Resources panel.
+Malicious pods were then forcibly stopped:
+kubectl delete deploy cryptonight minergate moneropool
+
+6. Summary of lessons learned:
+We should implement admission controllers to allow only certain images to be imported and started within the pods. Alongside the kubernetes security we should implement alerting by sending SMS-messages for instant notifications. At the client side of administration workstations we should implement strict local security policies with OS hardening and antivirus/DLP software installed, with no direct Internet access.
